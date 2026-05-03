@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Manuscript — Writing Style Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Special+Elite&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --parchment: #f2ead8;
+  --parchment-dark: #e8dfc4;
+  --parchment-deep: #ddd3b5;
+  --ink: #1c1510;
+  --ink-faded: #4a3f32;
+  --ink-ghost: #8c7d6a;
+  --ribbon: #8b1a0e;
+  --ribbon-dark: #6b1208;
+  --gold: #b8860b;
+  --gold-light: #d4a017;
+  --rule: #c4b896;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--parchment);
+  color: var(--ink);
+  font-family: 'Libre Baskerville', Georgia, serif;
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(180,160,110,0.12) 27px, rgba(180,160,110,0.12) 28px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  left: max(60px, calc(50vw - 390px));
+  top: 0; bottom: 0;
+  width: 1px;
+  background: rgba(180, 90, 80, 0.25);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page {
+  position: relative; z-index: 1;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 48px 100px 80px;
+}
+
+@keyframes fadeDown { from { opacity:0; transform: translateY(-12px); } to { opacity:1; transform: translateY(0); } }
+@keyframes fadeUp   { from { opacity:0; transform: translateY(16px);  } to { opacity:1; transform: translateY(0); } }
+@keyframes blink    { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* MASTHEAD */
+.masthead {
+  padding: 56px 0 28px;
+  animation: fadeDown 0.8s ease both;
+  border-bottom: 2.5px double var(--rule);
+}
+
+.masthead-rule-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.rule-line { flex: 1; height: 1px; background: var(--rule); }
+
+.masthead-ornament {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.1rem;
+  color: var(--ink-ghost);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.masthead h1 {
+  font-family: 'IM Fell English', serif;
+  font-size: clamp(2.8rem, 6vw, 4.4rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.masthead h1 em {
+  font-style: italic;
+  color: var(--ribbon);
+}
+
+.masthead-byline {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.72rem;
+  color: var(--ink-ghost);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 12px;
+}
+
+/* CHAPTER MARKER */
+.chapter {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-ghost);
+  margin: 40px 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.chapter::after { content: ''; flex:1; height: 1px; background: var(--rule); opacity: 0.6; }
+
+/* HOOK */
+.hook {
+  margin: 28px 0 36px;
+  animation: fadeUp 0.9s 0.2s ease both;
+}
+
+.hook p {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.18rem;
+  line-height: 1.9;
+  color: var(--ink-faded);
+  max-width: 600px;
+}
+
+.hook p + p { margin-top: 18px; }
+
+.hook .drop-cap::first-letter {
+  font-family: 'IM Fell English', serif;
+  font-size: 4.2rem;
+  float: left;
+  line-height: 0.78;
+  margin: 8px 8px -4px 0;
+  color: var(--ink);
+}
+
+.price-stamp {
+  display: inline-block;
+  border: 2px solid var(--ribbon);
+  color: var(--ribbon);
+  font-family: 'Special Elite', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  transform: rotate(-1.5deg);
+  box-shadow: 3px 3px 0 rgba(139, 26, 14, 0.18);
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* TOC */
+.toc {
+  background: rgba(255,255,255,0.35);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--ribbon);
+  padding: 24px 28px;
+  margin: 0 0 44px;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.toc-title {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ribbon);
+  margin-bottom: 16px;
+}
+
+.toc-row {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 8px;
+  font-size: 0.88rem;
+  color: var(--ink-faded);
+}
+.toc-row:last-child { margin-bottom: 0; }
+
+.toc-num {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.68rem;
+  color: var(--ink-ghost);
+  width: 26px;
+  flex-shrink: 0;
+}
+
+.toc-text { flex: 1; }
+
+.toc-dots { flex: 1; border-bottom: 1px dotted var(--rule); margin: 0 8px 3px; min-width: 20px; }
+
+.toc-tag {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.tag-free { background: none; border: 1px solid var(--ink-ghost); color: var(--ink-ghost); }
+.tag-paid { background: var(--ribbon); color: var(--parchment); }
+
+/* TEXTAREA */
+.manuscript-area {
+  position: relative;
+  margin-bottom: 28px;
+  animation: fadeUp 0.8s 0.5s ease both;
+}
+
+.manuscript-area::before {
+  content: '\275D';
+  position: absolute;
+  top: -14px; left: -22px;
+  font-size: 3rem;
+  color: var(--rule);
+  font-family: 'IM Fell English', serif;
+  line-height: 1;
+  pointer-events: none;
+}
+
+textarea {
+  width: 100%;
+  min-height: 240px;
+  padding: 24px 24px 24px 28px;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--rule);
+  border-bottom: 2px solid var(--ink-ghost);
+  color: var(--ink);
+  font-family: 'Special Elite', monospace;
+  font-size: 0.92rem;
+  line-height: 1.85;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  letter-spacing: 0.02em;
+}
+
+textarea::placeholder {
+  color: var(--ink-ghost);
+  font-style: italic;
+  font-family: 'IM Fell English', serif;
+  font-size: 0.96rem;
+  letter-spacing: 0;
+}
+
+textarea:focus {
+  border-color: var(--ink);
+  box-shadow: 0 4px 20px rgba(28,21,16,0.08);
+  background: rgba(255,255,255,0.65);
+}
+
+.word-ticker {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.62rem;
+  color: var(--ink-ghost);
+  letter-spacing: 0.12em;
+  text-align: right;
+  margin-top: 8px;
+}
+
+.word-ticker span { color: var(--ribbon); }
+
+/* ANALYSE BUTTON */
+.analyse-wrap { animation: fadeUp 0.8s 0.6s ease both; }
+
+.analyse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 18px 32px;
+  background: var(--ink);
+  color: var(--parchment);
+  border: none;
+  cursor: pointer;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 4px 4px 0 var(--ink-ghost);
+}
+
+.analyse-btn:hover {
+  background: var(--ink-faded);
+  box-shadow: 6px 6px 0 var(--ink-ghost);
+  transform: translate(-1px, -1px);
+}
+
+.analyse-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink-ghost);
+}
+
+.analyse-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+.btn-ornament { color: var(--gold-light); font-size: 1rem; }
+
+/* LOADER */
+.tw-loader {
+  display: none;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-ghost);
+  text-align: center;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.tw-loader .cursor {
+  display: inline-block;
+  width: 10px; height: 14px;
+  background: var(--ink-ghost);
+  vertical-align: middle;
+  margin-left: 2px;
+  animation: blink 0.8s step-end infinite;
+}
+
+/* RESULTS */
+#results {
+  display: none;
+  margin-top: 60px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.result-divider {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 48px;
+}
+
+.result-divider .rd-line { flex: 1; height: 1px; background: var(--ink); }
+.result-divider .rd-text {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.6rem;
+  font-style: italic;
+  padding: 0 20px;
+  color: var(--ink);
+}
+.result-divider .rd-short { width: 40px; height: 1px; background: var(--ink); }
+
+/* METRICS */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule);
+  margin-bottom: 40px;
+  background: rgba(255,255,255,0.3);
+}
+
+.metric {
+  padding: 24px 16px;
+  text-align: center;
+  border-right: 1px solid var(--rule);
+}
+.metric:last-child { border-right: none; }
+
+.metric-num {
+  font-family: 'IM Fell English', serif;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.metric-lbl {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-ghost);
+}
+
+/* STYLE BARS */
+.style-chapter { margin-bottom: 36px; }
+
+.bar-item { margin-bottom: 18px; }
+.bar-head { display: flex; justify-content: space-between; margin-bottom: 7px; }
+.bar-name { font-family: 'Libre Baskerville', serif; font-size: 0.85rem; color: var(--ink-faded); font-style: italic; }
+.bar-pct {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-ghost);
+}
+
+.bar-track {
+  height: 4px;
+  background: var(--parchment-deep);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* SNAPSHOT */
+.snapshot {
+  margin: 40px 0;
+  padding: 32px 40px;
+  background: var(--ink);
+  color: var(--parchment);
+  position: relative;
+}
+
+.snapshot::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  background: var(--ribbon);
+}
+
+.snapshot-label {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 14px;
+  opacity: 0.8;
+}
+
+.snapshot-text {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1.12rem;
+  line-height: 1.85;
+  color: #e8dfc6;
+}
+
+/* PAYWALL */
+.paywall {
+  margin: 48px -80px 0 -80px;
+  padding: 64px 80px;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(139,26,14,0.015) 0px, rgba(139,26,14,0.015) 1px,
+      transparent 1px, transparent 8px
+    ),
+    linear-gradient(160deg, #1c1510 0%, #2c1f14 50%, #1a110c 100%);
+  color: var(--parchment);
+  position: relative;
+  overflow: hidden;
+  border-top: 3px double var(--ribbon);
+}
+
+.paywall-watermark {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  font-family: 'Special Elite', monospace;
+  font-size: 7rem;
+  letter-spacing: 0.3em;
+  color: rgba(139,26,14,0.07);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.paywall-inner { position: relative; z-index: 1; max-width: 580px; margin: 0 auto; text-align: center; }
+
+.paywall-chapter {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ribbon);
+  margin-bottom: 20px;
+}
+
+.paywall-title {
+  font-family: 'IM Fell English', serif;
+  font-size: 2.4rem;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  color: #f0e8d4;
+}
+
+.paywall-title em { font-style: italic; color: var(--gold-light); }
+
+.paywall-body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.88rem;
+  line-height: 1.85;
+  color: #9a8d7a;
+  margin-bottom: 36px;
+}
+
+.locked-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 24px;
+  text-align: left;
+  margin: 0 auto 40px;
+  max-width: 420px;
+}
+
+.locked-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: #c4b49a;
+}
+
+.locked-item::before {
+  content: 'S';
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--ribbon);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--parchment);
+  color: var(--ink);
+  border: none;
+  padding: 18px 48px;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 5px 5px 0 rgba(0,0,0,0.4);
+  margin-bottom: 14px;
+}
+
+.cta-btn:hover {
+  background: #f8f0dc;
+  box-shadow: 8px 8px 0 rgba(0,0,0,0.5);
+  transform: translate(-2px, -2px);
+}
+
+.cta-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.4); }
+
+.cta-price {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.2rem;
+  color: var(--ribbon);
+  font-style: italic;
+  border-left: 1px solid rgba(139,26,14,0.4);
+  padding-left: 14px;
+  margin-left: 4px;
+}
+
+.cta-note {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  color: #5a4e40;
+  text-transform: uppercase;
+}
+
+/* FULL REPORT */
+#fullReport { display: none; margin-top: 48px; }
+
+.report-block {
+  margin-bottom: 44px;
+  animation: fadeUp 0.5s ease both;
+  padding-bottom: 44px;
+  border-bottom: 1px dashed var(--rule);
+}
+
+.report-block:last-child { border-bottom: none; }
+
+.report-block-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.report-block-num {
+  font-family: 'IM Fell English', serif;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--ribbon);
+}
+
+.report-block-title {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.2rem;
+  color: var(--ink);
+}
+
+.report-body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.9rem;
+  line-height: 1.9;
+  color: var(--ink-faded);
+}
+
+.persona-box {
+  margin-top: 14px;
+  padding: 16px 20px;
+  background: rgba(139,26,14,0.06);
+  border-left: 3px solid var(--ribbon);
+  font-family: 'IM Fell English', serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.7;
+}
+
+.tone-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+.tone-pill {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border: 1px solid var(--rule);
+  color: var(--ink-faded);
+}
+
+.tone-pill.lead {
+  background: var(--ink);
+  color: var(--parchment);
+  border-color: var(--ink);
+}
+
+.vocab-rows { margin-top: 14px; }
+.vocab-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--rule);
+  font-size: 0.85rem;
+}
+.vocab-row:last-child { border-bottom: none; }
+.vocab-word { font-family: 'Special Elite', monospace; letter-spacing: 0.06em; }
+.vocab-count { font-family: 'Special Elite', monospace; font-size: 0.68rem; color: var(--ink-ghost); }
+
+.tip-list { margin-top: 14px; }
+.tip-item {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+.tip-num {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.4rem;
+  font-style: italic;
+  color: var(--ribbon);
+  line-height: 1.2;
+  flex-shrink: 0;
+  width: 24px;
+}
+.tip-text { font-family: 'Libre Baskerville', serif; font-size: 0.88rem; line-height: 1.75; color: var(--ink-faded); }
+
+.unlocked-banner {
+  background: var(--ink);
+  color: var(--parchment);
+  padding: 10px 20px;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+/* MODAL */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(28,21,16,0.88);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+}
+.overlay.open { display: flex; }
+
+.modal {
+  background: var(--parchment);
+  max-width: 440px; width: 92%;
+  animation: fadeUp 0.35s ease;
+  border: 1px solid var(--rule);
+  box-shadow: 12px 12px 0 rgba(28,21,16,0.5);
+  overflow: hidden;
+}
+
+.modal-top {
+  background: var(--ink);
+  padding: 32px 36px 28px;
+  border-bottom: 3px double var(--ribbon);
+  text-align: center;
+}
+
+.modal-top-label {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 10px;
+}
+
+.modal-top-title {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.7rem;
+  font-style: italic;
+  color: #f0e8d4;
+}
+
+.modal-price-display {
+  font-family: 'IM Fell English', serif;
+  font-size: 3rem;
+  color: var(--ink);
+  text-align: center;
+  padding: 20px 36px 0;
+  font-weight: 400;
+}
+
+.modal-price-display small {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-ghost);
+  display: block;
+  margin-top: 4px;
+}
+
+.modal-body { padding: 20px 36px 32px; }
+
+.method-label {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-ghost);
+  margin-bottom: 12px;
+}
+
+.methods { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+
+.method {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border: 1px solid var(--rule);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.84rem;
+  background: rgba(255,255,255,0.4);
+}
+
+.method:hover { border-color: var(--ink); background: rgba(255,255,255,0.6); }
+.method.sel { border-color: var(--ink); background: rgba(255,255,255,0.7); }
+.method-icon { font-size: 1.2rem; }
+.method-info strong { display: block; font-size: 0.86rem; }
+.method-info span { font-size: 0.74rem; color: var(--ink-ghost); font-family: 'Special Elite', monospace; }
+
+.modal-confirm-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--ink);
+  color: var(--parchment);
+  border: none;
+  cursor: pointer;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: background 0.2s;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.25);
+}
+
+.modal-confirm-btn:hover { background: var(--ink-faded); }
+
+.modal-dismiss {
+  background: none; border: none; cursor: pointer;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-ghost);
+  width: 100%;
+  text-align: center;
+  padding: 12px;
+  display: block;
+  margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .page { padding: 0 20px 80px 36px; }
+  .metrics-row { grid-template-columns: repeat(2, 1fr); }
+  .paywall { margin: 48px -36px 0; padding: 48px 28px; }
+  .locked-list { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-rule-top">
+      <div class="rule-line"></div>
+      <div class="masthead-ornament">&#10022; &nbsp; The Manuscript &nbsp; &#10022;</div>
+      <div class="rule-line"></div>
+    </div>
+    <h1>Your words<br>tell a <em>story</em><br>about you.</h1>
+    <div class="masthead-byline">Writing Style Intelligence</div>
+  </header>
+
+  <div class="hook">
+    <p class="drop-cap">Every writer has a fingerprint &#8212; a rhythm, a vocabulary, a
+    way of building sentences that is entirely their own. Most never see it.</p>
+    <p>Paste any piece of writing below. In moments, we will hold it up to the light
+    and reveal what lives inside the prose. A free preview awaits &#8212; then, for those who
+    want the whole truth &#8212; a complete report. <span class="price-stamp">RM 5.00</span></p>
+  </div>
+
+  <div class="chapter">Contents</div>
+  <div class="toc">
+    <div class="toc-title">What this analysis contains</div>
+    <div class="toc-row">
+      <span class="toc-num">I.</span>
+      <span class="toc-text">Basic statistics &amp; readability grade</span>
+      <span class="toc-dots"></span>
+      <span class="toc-tag tag-free">Free</span>
+    </div>
+    <div class="toc-row">
+      <span class="toc-num">II.</span>
+      <span class="toc-text">Four style dimension scores</span>
+      <span class="toc-dots"></span>
+      <span class="toc-tag tag-free">Free</span>
+    </div>
+    <div class="toc-row">
+      <span class="toc-num">III.</span>
+      <span class="toc-text">AI style snapshot</span>
+      <span class="toc-dots"></span>
+      <span class="toc-tag tag-free">Free</span>
+    </div>
+    <div class="toc-row">
+      <span class="toc-num">IV.</span>
+      <span class="toc-text">Writing persona &amp; archetype</span>
+      <span class="toc-dots"></span>
+      <span class="toc-tag tag-paid">RM 5</span>
+    </div>
+    <div class="toc-row">
+      <span class="toc-num">V.</span>
+      <span class="toc-text">Tone &amp; mood map</span>
+      <span class="toc-dots"></span>
+      <span class="toc-tag tag-paid">RM 5</span>
+    </div>
+    <div class="toc-row">
+      <span class="toc-num">VI.</span>
+      <span class="toc-text">Vocabulary fingerprint</span>
+      <span class="toc-dots"></span>
+      <span class="toc-tag tag-paid">RM 5</span>
+    </div>
+    <div class="toc-row">
+      <span class="toc-num">VII.</span>
+      <span class="toc-text">Sentence rhythm &amp; flow</span>
+      <span class="toc-dots"></span>
+      <span class="toc-tag tag-paid">RM 5</span>
+    </div>
+    <div class="toc-row">
+      <span class="toc-num">VIII.</span>
+      <span class="toc-text">Three improvement recommendations</span>
+      <span class="toc-dots"></span>
+      <span class="toc-tag tag-paid">RM 5</span>
+    </div>
+  </div>
+
+  <div class="chapter">Your Writing Sample</div>
+
+  <div class="manuscript-area">
+    <textarea id="textInput"
+      placeholder="Begin here. Paste an essay, a journal entry, a letter, a chapter — any prose will do. At least a hundred words reveals the most…"
+      oninput="updateCount()"></textarea>
+  </div>
+  <div class="word-ticker"><span id="wc">0</span> words counted</div>
+
+  <div class="analyse-wrap" style="margin-top:20px">
+    <button class="analyse-btn" id="analyseBtn" onclick="analyse()">
+      <span class="btn-ornament">&#10022;</span>
+      <span id="btnLabel">Analyse My Writing</span>
+      <span class="btn-ornament">&#10022;</span>
+    </button>
+  </div>
+
+  <div class="tw-loader" id="twLoader">
+    Reading the manuscript<span class="cursor"></span>
+  </div>
+
+  <div id="results">
+
+    <div class="result-divider">
+      <div class="rd-line"></div>
+      <div class="rd-text">Analysis</div>
+      <div class="rd-short"></div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric">
+        <div class="metric-num" id="m-words">&#8212;</div>
+        <div class="metric-lbl">Words</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num" id="m-sents">&#8212;</div>
+        <div class="metric-lbl">Sentences</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num" id="m-read">&#8212;</div>
+        <div class="metric-lbl">Readability</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num" id="m-avg">&#8212;</div>
+        <div class="metric-lbl">Words / Sent.</div>
+      </div>
+    </div>
+
+    <div class="chapter">Style Dimensions</div>
+    <div class="style-chapter">
+      <div class="bar-item">
+        <div class="bar-head"><span class="bar-name">Formality of register</span><span class="bar-pct" id="s-form">&#8212;</span></div>
+        <div class="bar-track"><div class="bar-fill" id="b-form" style="background:var(--ink)"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-head"><span class="bar-name">Linguistic complexity</span><span class="bar-pct" id="s-comp">&#8212;</span></div>
+        <div class="bar-track"><div class="bar-fill" id="b-comp" style="background:var(--ribbon)"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-head"><span class="bar-name">Emotional depth</span><span class="bar-pct" id="s-emot">&#8212;</span></div>
+        <div class="bar-track"><div class="bar-fill" id="b-emot" style="background:var(--gold)"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-head"><span class="bar-name">Vocabulary diversity</span><span class="bar-pct" id="s-voc">&#8212;</span></div>
+        <div class="bar-track"><div class="bar-fill" id="b-voc" style="background:var(--ink-faded)"></div></div>
+      </div>
+    </div>
+
+    <div class="snapshot">
+      <div class="snapshot-label">&#10022; &nbsp; Style Snapshot &#8212; Free Preview</div>
+      <div class="snapshot-text" id="snapText">&#8230;</div>
+    </div>
+
+    <div class="paywall" id="paywallSection">
+      <div class="paywall-watermark">RESTRICTED</div>
+      <div class="paywall-inner">
+        <div class="paywall-chapter">&#167; &nbsp; The Full Report &nbsp; &#167;</div>
+        <div class="paywall-title">The rest of the<br><em>manuscript awaits.</em></div>
+        <div class="paywall-body">
+          Your snapshot is only the first page. The full report goes deeper &#8212;
+          into the marrow of your style. Who are you as a writer?
+          What does your vocabulary betray? How does your rhythm move a reader?
+        </div>
+        <div class="locked-list">
+          <div class="locked-item">Writing persona archetype</div>
+          <div class="locked-item">Tone &amp; mood map</div>
+          <div class="locked-item">Vocabulary fingerprint</div>
+          <div class="locked-item">Sentence rhythm analysis</div>
+          <div class="locked-item">Top word patterns</div>
+          <div class="locked-item">3 improvement tips</div>
+        </div>
+        <div>
+          <button class="cta-btn" onclick="openModal()">
+            <span>Unlock the Full Report</span>
+            <span class="cta-price">RM 5</span>
+          </button>
+        </div>
+        <div class="cta-note">One-time &nbsp;&#183;&nbsp; DuitNow QR or bank transfer &nbsp;&#183;&nbsp; Instant access</div>
+      </div>
+    </div>
+
+    <div id="fullReport">
+      <div class="unlocked-banner">&#10022; &nbsp; Full Report Unlocked &nbsp; &#10022;</div>
+
+      <div class="report-block" style="animation-delay:0s">
+        <div class="report-block-header">
+          <span class="report-block-num">&#167; IV.</span>
+          <span class="report-block-title">Writing Persona</span>
+        </div>
+        <div class="persona-box" id="r-persona-box"></div>
+      </div>
+
+      <div class="report-block" style="animation-delay:0.08s">
+        <div class="report-block-header">
+          <span class="report-block-num">&#167; V.</span>
+          <span class="report-block-title">Tone &amp; Mood Map</span>
+        </div>
+        <div class="report-body" id="r-tone-body"></div>
+        <div class="tone-cloud" id="r-tone-tags"></div>
+      </div>
+
+      <div class="report-block" style="animation-delay:0.16s">
+        <div class="report-block-header">
+          <span class="report-block-num">&#167; VI.</span>
+          <span class="report-block-title">Vocabulary Fingerprint</span>
+        </div>
+        <div class="report-body" id="r-vocab-body"></div>
+        <div class="vocab-rows" id="r-vocab-rows"></div>
+      </div>
+
+      <div class="report-block" style="animation-delay:0.24s">
+        <div class="report-block-header">
+          <span class="report-block-num">&#167; VII.</span>
+          <span class="report-block-title">Sentence Rhythm &amp; Flow</span>
+        </div>
+        <div class="report-body" id="r-rhythm-body"></div>
+      </div>
+
+      <div class="report-block" style="animation-delay:0.32s">
+        <div class="report-block-header">
+          <span class="report-block-num">&#167; VIII.</span>
+          <span class="report-block-title">Improvement Recommendations</span>
+        </div>
+        <div class="tip-list" id="r-tips"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="handleOverlay(event)">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="modal-top-label">Complete your order</div>
+      <div class="modal-top-title">The Manuscript &#8212; Full Report</div>
+    </div>
+    <div class="modal-price-display">RM 5.00 <small>One-time &nbsp;&#183;&nbsp; No subscription</small></div>
+    <div class="modal-body">
+      <div class="method-label">Select payment method</div>
+      <div class="methods">
+        <div class="method sel" id="pm-duitnow" onclick="selMethod('duitnow')">
+          <span class="method-icon">&#127974;</span>
+          <div class="method-info"><strong>DuitNow QR</strong><span>Any Malaysian banking app</span></div>
+        </div>
+        <div class="method" id="pm-transfer" onclick="selMethod('transfer')">
+          <span class="method-icon">&#128184;</span>
+          <div class="method-info"><strong>Bank Transfer</strong><span>Transfer &amp; send screenshot</span></div>
+        </div>
+      </div>
+      <button class="modal-confirm-btn" onclick="confirmPayment()">&#10022; &nbsp; I Have Paid &#8212; Unlock Now</button>
+      <button class="modal-dismiss" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let reportData = null;
+
+function updateCount() {
+  const t = document.getElementById('textInput').value.trim();
+  document.getElementById('wc').textContent = t ? t.split(/\s+/).length : 0;
+}
+
+async function analyse() {
+  const text = document.getElementById('textInput').value.trim();
+  if (!text || text.split(/\s+/).length < 30) {
+    alert('Please enter at least 30 words to begin the analysis.');
+    return;
+  }
+  const btn = document.getElementById('analyseBtn');
+  btn.disabled = true;
+  document.getElementById('btnLabel').textContent = 'Reading\u2026';
+  document.getElementById('twLoader').style.display = 'block';
+
+  try {
+    const stats  = computeStats(text);
+    const aiData = await fetchAI(text, stats);
+    reportData   = { ...stats, ai: aiData };
+    renderFree(stats, aiData.snapshot);
+  } catch(e) {
+    console.error(e);
+    alert('Something went wrong. Please try again.');
+  } finally {
+    btn.disabled = false;
+    document.getElementById('btnLabel').textContent = 'Analyse My Writing';
+    document.getElementById('twLoader').style.display = 'none';
+  }
+}
+
+function computeStats(text) {
+  const words     = text.trim().split(/\s+/);
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 2);
+  const wc        = words.length;
+  const sc        = Math.max(sentences.length, 1);
+  const avgLen    = Math.round(wc / sc);
+  const syllables = words.reduce((s, w) => s + syl(w), 0);
+  const flesch    = Math.max(0, Math.min(100, Math.round(206.835 - 1.015*(wc/sc) - 84.6*(syllables/wc))));
+  const readLabel = flesch>=70?'Easy':flesch>=50?'Moderate':flesch>=30?'Difficult':'Expert';
+  const unique    = new Set(words.map(w => w.toLowerCase().replace(/[^a-z]/g,''))).size;
+  const ttr       = Math.round((unique/wc)*100);
+  const longW     = words.filter(w=>w.length>8).length;
+  const formality = Math.min(100, Math.round((longW/wc)*400+20));
+  const complexity= Math.min(100, Math.round(100-flesch*0.7+formality*0.3));
+  const eWords    = ['feel','love','hate','fear','joy','sad','happy','angry','hope','wish','want','care','miss','proud','excited','nervous','worried','grateful','amazing','terrible','beautiful','painful','wonder','dream','ache'];
+  const eCount    = words.filter(w=>eWords.includes(w.toLowerCase().replace(/[^a-z]/g,''))).length;
+  const emotion   = Math.min(100, Math.round((eCount/wc)*600+10));
+  const freq={};
+  const stop=['that','this','with','from','have','been','were','they','their','what','when','which','will','would','could','should','there','these','those','about','after','before','your','more','also','just','very','some','into','than','then','over','only','like','even','such','each','much','most','many','well','said'];
+  words.forEach(w=>{const c=w.toLowerCase().replace(/[^a-z]/g,'');if(c.length>3&&!stop.includes(c))freq[c]=(freq[c]||0)+1;});
+  const topWords = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  return { wc, sc, flesch, readLabel, avgLen, ttr, formality, complexity, emotion, topWords };
+}
+
+function syl(w){
+  w=w.toLowerCase().replace(/[^a-z]/g,'');
+  if(w.length<=3)return 1;
+  w=w.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/,'').replace(/^y/,'');
+  const m=w.match(/[aeiouy]{1,2}/g);
+  return m?m.length:1;
+}
+
+async function fetchAI(text, stats) {
+  const excerpt = text.slice(0, 1500);
+  const prompt = `Analyze this writing sample. Return valid JSON only, no markdown fences, no preamble.
+
+Sample:
+"""${excerpt}"""
+
+Stats: ${stats.wc} words, ${stats.sc} sentences, avg ${stats.avgLen} words per sentence, readability: ${stats.readLabel} (Flesch ${stats.flesch}).
+
+Return exactly this JSON:
+{
+  "snapshot": "2-3 sentences that are sharp, specific, and insightful about this writer's style. Avoid generic praise. Name what is distinctive.",
+  "persona": "Name the archetype first (e.g. The Meditative Observer). Then 2 sentences on what defines this writer's personality on the page.",
+  "toneAnalysis": "2-3 sentences on tone, mood, emotional register with specific observations.",
+  "tones": ["4 to 6 tone adjectives"],
+  "primaryTone": "single dominant tone word",
+  "vocabAnalysis": "2-3 sentences on vocabulary: sophistication, range, recurring choices and what they reveal.",
+  "rhythmAnalysis": "2-3 sentences on sentence length variation, pacing, cadence and its effect on the reader.",
+  "tips": ["tip one as a complete actionable sentence","tip two","tip three"]
+}`;
+
+  const res  = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:1000,
+      messages:[{role:"user",content:prompt}]
+    })
+  });
+  const data = await res.json();
+  const raw  = data.content[0].text.trim().replace(/```json|```/g,'').trim();
+  return JSON.parse(raw);
+}
+
+function renderFree(stats, snapshot) {
+  document.getElementById('m-words').textContent = stats.wc;
+  document.getElementById('m-sents').textContent = stats.sc;
+  document.getElementById('m-read').textContent  = stats.readLabel;
+  document.getElementById('m-avg').textContent   = stats.avgLen;
+  document.getElementById('snapText').textContent = snapshot;
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('paywallSection').style.display = 'block';
+  document.getElementById('fullReport').style.display = 'none';
+  setTimeout(() => {
+    setBar('form', stats.formality);
+    setBar('comp', stats.complexity);
+    setBar('emot', stats.emotion);
+    setBar('voc',  stats.ttr);
+  }, 150);
+  document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function setBar(id, val) {
+  document.getElementById('b-'+id).style.width = val+'%';
+  document.getElementById('s-'+id).textContent = val+'%';
+}
+
+function openModal() { document.getElementById('overlay').classList.add('open'); }
+function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
+function handleOverlay(e){ if(e.target===document.getElementById('overlay')) closeModal(); }
+function selMethod(m){
+  document.querySelectorAll('.method').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('pm-'+m).classList.add('sel');
+}
+
+function confirmPayment() {
+  closeModal();
+  unlockReport();
+}
+
+function unlockReport() {
+  if (!reportData || !reportData.ai) return;
+  const ai = reportData.ai;
+
+  document.getElementById('r-persona-box').textContent = ai.persona || '';
+  document.getElementById('r-tone-body').textContent   = ai.toneAnalysis || '';
+
+  const tc = document.getElementById('r-tone-tags');
+  tc.innerHTML = '';
+  (ai.tones||[]).forEach(t=>{
+    const el=document.createElement('span');
+    el.className='tone-pill'+(t===ai.primaryTone?' lead':'');
+    el.textContent=t; tc.appendChild(el);
+  });
+
+  document.getElementById('r-vocab-body').textContent = ai.vocabAnalysis || '';
+  const vr = document.getElementById('r-vocab-rows');
+  vr.innerHTML='';
+  (reportData.topWords||[]).forEach(([w,c])=>{
+    vr.innerHTML+=`<div class="vocab-row"><span class="vocab-word">${w}</span><span class="vocab-count">x${c}</span></div>`;
+  });
+
+  document.getElementById('r-rhythm-body').textContent = ai.rhythmAnalysis || '';
+
+  const tl = document.getElementById('r-tips');
+  tl.innerHTML='';
+  (ai.tips||[]).forEach((t,i)=>{
+    tl.innerHTML+=`<div class="tip-item"><span class="tip-num">${i+1}.</span><span class="tip-text">${t}</span></div>`;
+  });
+
+  document.getElementById('paywallSection').style.display = 'none';
+  document.getElementById('fullReport').style.display     = 'block';
+  document.getElementById('fullReport').scrollIntoView({behavior:'smooth', block:'start'});
+}
+</script>
+</body>
+</html>
